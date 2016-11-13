@@ -45,7 +45,7 @@ class CategoryController extends Controller
         $em->persist($category);
         $em->flush();
 
-        return $this->json(['result' => true]);
+        return $this->json(['result' => true, 'category' => ['name' => $category->getName(), 'id' => $category->getId()]]);
     }
 
     /**

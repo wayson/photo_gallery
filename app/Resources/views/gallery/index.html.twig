@@ -15,7 +15,7 @@
             <ul class="nav sidebar-nav" id="category-ul">
                 <li class="sidebar-brand">
                     <a href="#" id="manage-category-a">
-                        Manage category
+                        Loading ...
                     </a>
                 </li>
                 <li id="manage-category-add-li" class="btn-group">
@@ -61,9 +61,55 @@
         $('#photo-div').hide();
         $('#welcome-div').show();
 
-        function createCategoryItem(item)
+        function createCategoryItem(item, editMode)
         {
+            var link = $('<a href="#"></a>').text(item.name).addClass('category-nav-a');
+            var div = $('<div class="edit-category-div"></div>');
+            var inputField = $('<input type="text">').val(item.name);
+            var editButton = $('<button>Edit</button>').addClass('editBtn').attr('category-id', item.id);
+            var deleteButton = $('<button>Delete</button>').addClass('deleteBtn').attr('category-id', item.id);
 
+            //set the click listener on all the edit button
+            editButton.click(function(){
+                $.ajax({
+                    url:'/admin/category/edit/' + $(this).attr('category-id'),
+                    type:'PUT',
+                    data: '{"name":"' + $(this).prev().val() + '"}',
+                    success:function(data){
+                        if(data.result == true){
+                            alert('Updated');
+                        } else {
+                            alert('Unable to change');
+                        }
+                    }
+                });
+            });
+            //set the click listener on all the delete button
+            deleteButton.click(function(){
+                $.ajax({
+                    url:'/admin/category/delete/' + $(this).attr('category-id'),
+                    type:'DELETE',
+                    success:function(data){
+                        if(data.result == true){
+                            deleteButton.parent().parent().remove();
+                        } else {
+                            alert('Unable to delete');
+                        }
+                    }
+                });
+            });
+
+            div.append(inputField).append(editButton).append(deleteButton);
+
+            if(editMode == false){
+                div.hide();
+            } else {
+                link.hide();
+            }
+
+            var li = $('<li></li>').addClass('category').append(link).append(div);
+
+            li.insertAfter('#category-ul > li.sidebar-brand');
         }
 
         //Load the category via ajax
@@ -74,48 +120,10 @@
                 $('#category-ul > li.category').remove();
 
                 $.each(categories, function(index, item){
-                    var link = $('<a href="#"></a>').text(item.name).addClass('category-nav-a');
-                    var div = $('<div class="edit-category-div"></div>');
-                    var inputField = $('<input type="text">').val(item.name);
-                    var editButton = $('<button>Edit</button>').addClass('editBtn').attr('category-id', item.id);
-                    var deleteButton = $('<button>Delete</button>').addClass('deleteBtn').attr('category-id', item.id);
+                    createCategoryItem(item, false);
+                });
 
-                    //set the click listener on all the edit button
-                    editButton.click(function(){
-                        $.ajax({
-                            url:'/admin/category/edit/' + $(this).attr('category-id'),
-                            type:'PUT',
-                            data: '{"name":"' + $(this).prev().val() + '"}',
-                            success:function(data){
-                                if(data.result == true){
-                                    alert('Updated');
-                                } else {
-                                    alert('Unable to change');
-                                }
-                            }
-                        });
-                    });
-                    //set the click listener on all the delete button
-                    deleteButton.click(function(){
-                        $.ajax({
-                            url:'/admin/category/delete/' + $(this).attr('category-id'),
-                            type:'DELETE',
-                            success:function(data){
-                                if(data.result == true){
-                                    deleteButton.parent().parent().remove();
-                                } else {
-                                    alert('Unable to delete');
-                                }
-                            }
-                        });
-                    });
-
-
-                    div.append(inputField).append(editButton).append(deleteButton).hide();
-                    var li = $('<li></li>').addClass('category').append(link).append(div);
-
-                    li.insertAfter('#category-ul > li.sidebar-brand');
-                })
+                $('#manage-category-a').text('Manage category');
             });
 
             //hide the edit div
@@ -164,12 +172,14 @@
                 data: '{"name":"' + $(this).prev().val() + '"}',
                 success:function(data){
                     if(data.result == true){
-
+                        createCategoryItem(data.category, true);
                     } else {
                         alert('Unable to change');
                     }
                 }
             });
+
+            $(this).prev().val('');
         });
     </script>
 
