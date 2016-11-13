@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
+
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/awesome-style.css') }}">
 {% endblock %}
@@ -11,13 +12,16 @@
 
         <!-- Sidebar -->
         <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-            <ul class="nav sidebar-nav">
+            <ul class="nav sidebar-nav" id="category-ul">
                 <li class="sidebar-brand">
-                    <a href="#">
-                        <i class="fa fa-plus"> Create category</i>
+                    <a href="#" id="manage-category-a">
+                        Manage category
                     </a>
                 </li>
-
+                <li id="manage-category-add-li" class="btn-group">
+                    <input type="text" name="name">
+                    <button id="create-category-btn">Add category</button>
+                </li>
             </ul>
         </nav>
         <!-- /#sidebar-wrapper -->
@@ -31,9 +35,12 @@
             </button>
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
+                    <div class="col-lg-8 col-lg-offset-2" id="welcome-div">
                         <h1 class="page-header">Welcome to photo gallery</h1>
                         <p class="lead">Select a category from the top left toggle menu to see the images here</p>
+                    </div>
+                    <div id="photo-div">
+
                     </div>
                 </div>
             </div>
@@ -48,5 +55,122 @@
     {{ parent() }}
 
     <script src="{{ asset('js/awesome-index.js') }}"></script>
+
+    <script>
+        //hide the photo div and show the welcome page when the page loads
+        $('#photo-div').hide();
+        $('#welcome-div').show();
+
+        function createCategoryItem(item)
+        {
+
+        }
+
+        //Load the category via ajax
+        function loadCategory()
+        {
+            //get the users list
+            $.getJSON('/admin/category', null, function(categories){
+                $('#category-ul > li.category').remove();
+
+                $.each(categories, function(index, item){
+                    var link = $('<a href="#"></a>').text(item.name).addClass('category-nav-a');
+                    var div = $('<div class="edit-category-div"></div>');
+                    var inputField = $('<input type="text">').val(item.name);
+                    var editButton = $('<button>Edit</button>').addClass('editBtn').attr('category-id', item.id);
+                    var deleteButton = $('<button>Delete</button>').addClass('deleteBtn').attr('category-id', item.id);
+
+                    //set the click listener on all the edit button
+                    editButton.click(function(){
+                        $.ajax({
+                            url:'/admin/category/edit/' + $(this).attr('category-id'),
+                            type:'PUT',
+                            data: '{"name":"' + $(this).prev().val() + '"}',
+                            success:function(data){
+                                if(data.result == true){
+                                    alert('Updated');
+                                } else {
+                                    alert('Unable to change');
+                                }
+                            }
+                        });
+                    });
+                    //set the click listener on all the delete button
+                    deleteButton.click(function(){
+                        $.ajax({
+                            url:'/admin/category/delete/' + $(this).attr('category-id'),
+                            type:'DELETE',
+                            success:function(data){
+                                if(data.result == true){
+                                    deleteButton.parent().parent().remove();
+                                } else {
+                                    alert('Unable to delete');
+                                }
+                            }
+                        });
+                    });
+
+
+                    div.append(inputField).append(editButton).append(deleteButton).hide();
+                    var li = $('<li></li>').addClass('category').append(link).append(div);
+
+                    li.insertAfter('#category-ul > li.sidebar-brand');
+                })
+            });
+
+            //hide the edit div
+            $('.edit-category-div').hide();
+        }
+        loadCategory(); //call the category list on page load
+
+        //toggle the category edit mode
+        function toggleCategoryEdit(editMode)
+        {
+            if(editMode == true){
+                $('.edit-category-div').show();
+                $('.category-nav-a').hide();
+                $('#manage-category-add-li').show();
+            } else {
+                $('.edit-category-div').hide();
+                $('.category-nav-a').show();
+                $('#manage-category-add-li').hide();
+            }
+        }
+
+
+        var categoryEditMode = false;
+        //add listener for managing category link
+        $('#manage-category-a').click(function(){
+            if(categoryEditMode == true){
+                categoryEditMode = false;
+                toggleCategoryEdit(false);
+
+                $(this).text('Manage categories');
+            } else {
+                categoryEditMode = true;
+                toggleCategoryEdit(true);
+                //show all the edit fields
+                $(this).text('Finish');
+            }
+        });
+
+        $('#manage-category-add-li').hide();    //Hide the category add button by default
+
+        //set teh click listener on the add category button
+        $('#create-category-btn').click(function(){
+            $.ajax({
+                url:'/admin/category/create',
+                type:'POST',
+                data: '{"name":"' + $(this).prev().val() + '"}',
+                success:function(data){
+                    if(data.result == true){
+
+                    } else {
+                        alert('Unable to change');
+                    }
+                }
+            });
+        });
+    </script>
 
 {% endblock %}
