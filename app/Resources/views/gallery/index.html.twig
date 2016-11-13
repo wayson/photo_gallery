@@ -4,6 +4,11 @@
 
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/awesome-style.css') }}">
+    <style>
+        .thumb {
+            margin-bottom: 30px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -40,7 +45,35 @@
                         <p class="lead">Select a category from the top left toggle menu to see the images here</p>
                     </div>
                     <div id="photo-div">
-
+                        <h3 class="page-header" id="gallery-header"></h3>
+                        <div class="container-fluid">
+                            <div class="row" id="photo-collection-div">
+                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                               </div>
+                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                               </div>
+                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                               </div>
+                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,11 +96,34 @@
 
         function createCategoryItem(item, editMode)
         {
-            var link = $('<a href="#"></a>').text(item.name).addClass('category-nav-a');
+            var link = $('<a href="#"></a>').text(item.name).addClass('category-nav-a').attr('category-id', item.id).append($('<span></span>'));
             var div = $('<div class="edit-category-div"></div>');
             var inputField = $('<input type="text">').val(item.name);
             var editButton = $('<button>Edit</button>').addClass('editBtn').attr('category-id', item.id);
             var deleteButton = $('<button>Delete</button>').addClass('deleteBtn').attr('category-id', item.id);
+
+            link.click(function(){
+                $('#welcome-div').hide();
+                $('#photo-div').show();
+                $('#gallery-header').text($(this).text() + ' Photo Gallery');
+
+                //clear all the active categories
+                $('a.category-nav-a > span').text('');
+                //add the active category
+                $(this).find('span').text('*');
+
+                //load the photo from ajax
+                $.getJSON('/admin/category/photo/' + $(this).attr('category-id'), null, function(photos){
+                    //clear all the photos
+                    var photoDiv = $('#photo-collection-div');
+                    photoDiv.empty();
+                    $.each(photos, function(index, item){
+                        var img = $('<img src="' + item.flickrUrlSmall + '">').addClass('img-responsive').attr('title', item.title).attr('description', item.description);
+                        var imgDiv = $('<div></div>').addClass('col-lg-3 col-md-4 col-xs-6 thumb').append(img);
+                        photoDiv.append(imgDiv);
+                    });
+                });
+            });
 
             //set the click listener on all the edit button
             editButton.click(function(){
@@ -98,9 +154,7 @@
                     }
                 });
             });
-
             div.append(inputField).append(editButton).append(deleteButton);
-
             if(editMode == false){
                 div.hide();
             } else {
@@ -108,7 +162,6 @@
             }
 
             var li = $('<li></li>').addClass('category').append(link).append(div);
-
             li.insertAfter('#category-ul > li.sidebar-brand');
         }
 

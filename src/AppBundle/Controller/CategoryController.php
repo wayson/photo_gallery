@@ -2,6 +2,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Category;
+use AppBundle\Entity\Photo;
+use AppBundle\Utils\FlickrPhotos;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -44,6 +46,27 @@ class CategoryController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($category);
         $em->flush();
+
+        /**
+         * Search flickr by the category name to load 100 photos under a category
+         */
+        $flickrPhoto = new FlickrPhotos();
+        $photoResults = $flickrPhoto->searchPhotos($content['name']);
+        $userId = $this->getUser()->getId();
+        $categoryId = $category->getId();
+        foreach($photoResults as $photoResult){
+            $photo = new Photo();
+            $photo->setUserId($userId);
+            $photo->setCategoryId($categoryId);
+            $photo->setTitle($photoResult['id']);
+            $photo->setDescription($photoResult['title']);
+            $photo->setFlickrUrlSmall($photoResult['flickrUrlSmall']);
+            $photo->setFlickerUrlLarge($photoResult['flickerUrlLarge']);
+
+            //save to DB
+            $em->persist($photo);
+            $em->flush();
+        }
 
         return $this->json(['result' => true, 'category' => ['name' => $category->getName(), 'id' => $category->getId()]]);
     }
@@ -89,11 +112,31 @@ class CategoryController extends Controller
             $this->getUser()->getId()
         );
 
+        //delete photos
+        $this->getDoctrine()->getRepository(Photo::class)->deletePhotoByCategoryId($categoryId);
+
+        //delete category
         $em = $this->getDoctrine()->getManager();
         $em->remove($category);
         $em->flush();
 
         return $this->json(['result' => true]);
+    }
+
+    /**
+     *
+     * @param Request $request
+     *
+     * @Route("/photo/{categoryId}", name="category_photo")
+     * @Method("GET")
+     */
+    public function getPhotoAction(Request $request)
+    {
+        $categoryId = $request->get('categoryId');
+
+        $photos = $this->getDoctrine()->getRepository(Photo::class)->getPhotoByCategoryId($categoryId);
+
+        return $this->json($photos);
     }
 
 }
