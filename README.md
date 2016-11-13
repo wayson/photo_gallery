@@ -14,11 +14,13 @@ How to deploy the project:
 
 
 Note:
+
 1. In the left navigation panel, the top button "Manage category is clickable". Click it and the category CRUD will be shown.
 2. Once the category is created, it will load 100 photos from flickr automatically by searching flickr with category's name.
 
 
 Furture improvement:
+
 1. The photos in category shouldn't load automatically from flickr. It should provide a user interface for user to upload the photos.'
 2. Using jQuery would be a little bit hard to maintain if it becomes complicated. We should use ReactJS or any other modern front end framework.
 
