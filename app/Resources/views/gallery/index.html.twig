@@ -27,6 +27,9 @@
                     <input type="text" name="name">
                     <button id="create-category-btn">Add category</button>
                 </li>
+                <li>
+                    <a href="/logout">Log out</a>
+                </li>
             </ul>
         </nav>
         <!-- /#sidebar-wrapper -->
@@ -134,6 +137,7 @@
 
             //set the click listener on all the edit button
             editButton.click(function(){
+                $(this).parent().prev().text($(this).prev().val());
                 $.ajax({
                     url:'/admin/category/edit/' + $(this).attr('category-id'),
                     type:'PUT',

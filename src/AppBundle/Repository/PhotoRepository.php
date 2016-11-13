@@ -14,9 +14,12 @@ class PhotoRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
 
-        $qb->delete('Photo', 'p')
-            ->where('p.category_id = :categoryId')
-            ->setParameter('categoryId', $categoryId);
+        $query = $qb->delete('AppBundle:Photo', 'p')
+                ->where('p.categoryId = :categoryId')
+                ->setParameter('categoryId', $categoryId)
+                ->getQuery();
+
+        $query->execute();
     }
 
     public function getPhotoByCategoryId($categoryId)
