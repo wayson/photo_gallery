@@ -8,9 +8,10 @@ How to deploy the project:
 1. Pull the code from github
 2. run composer update in the root folder
 3. Create database and set the database connection details in /app/config/parameters.yml
-4. Run the command "php bin/console doctrine:schema:update --force" to create the database schema
-5. Run the command "php bin/console app:add-user" and follow the prompt to create user and password.
-6. Go to the home page and login
+4. Clear cache
+5. Run the command "php bin/console doctrine:schema:update --force" to create the database schema
+6. Run the command "php bin/console app:add-user" and follow the prompt to create user and password.
+7. Go to the home page and login
 
 
 Note:
