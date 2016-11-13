@@ -31,9 +31,6 @@ use AppBundle\Entity\User;
  *
  *     $ php bin/console app:add-user -vv
  *
- * See http://symfony.com/doc/current/cookbook/console/console_command.html
- *
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
 class AddUserCommand extends ContainerAwareCommand
 {
