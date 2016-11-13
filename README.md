@@ -1,68 +1,24 @@
-Symfony Standard Edition
+Photo gallery with AJAX and Flickr
 ========================
 
-Welcome to the Symfony Standard Edition - a fully-functional Symfony
-application that you can use as the skeleton for your new applications.
+This is the test of responsive gallery using bootstrap 3, flickr and Symfony 3.
 
-For details on how to download and get started with Symfony, see the
-[Installation][1] chapter of the Symfony Documentation.
+How to deploy the project:
 
-What's inside?
---------------
+1. Pull the code from github
+2. run composer update in the root folder
+3. Create database and set the database connection details in /app/config/parameters.yml
+4. Run the command "php bin/console doctrine:schema:update --force" to create the database schema
+5. Run the command "php bin/console app:add-user" and follow the prompt to create user and password.
+6. Go to the home page and login
 
-The Symfony Standard Edition is configured with the following defaults:
 
-  * An AppBundle you can use to start coding;
+Note:
+1. In the left navigation panel, the top button "Manage category is clickable". Click it and the category CRUD will be shown.
+2. Once the category is created, it will load 100 photos from flickr automatically by searching flickr with category's name.
 
-  * Twig as the only configured template engine;
 
-  * Doctrine ORM/DBAL;
+Furture improvement:
+1. The photos in category shouldn't load automatically from flickr. It should provide a user interface for user to upload the photos.'
+2. Using jQuery would be a little bit hard to maintain if it becomes complicated. We should use ReactJS or any other modern front end framework.
 
-  * Swiftmailer;
-
-  * Annotations enabled for everything.
-
-It comes pre-configured with the following bundles:
-
-  * **FrameworkBundle** - The core Symfony framework bundle
-
-  * [**SensioFrameworkExtraBundle**][6] - Adds several enhancements, including
-    template and routing annotation capability
-
-  * [**DoctrineBundle**][7] - Adds support for the Doctrine ORM
-
-  * [**TwigBundle**][8] - Adds support for the Twig templating engine
-
-  * [**SecurityBundle**][9] - Adds security by integrating Symfony's security
-    component
-
-  * [**SwiftmailerBundle**][10] - Adds support for Swiftmailer, a library for
-    sending emails
-
-  * [**MonologBundle**][11] - Adds support for Monolog, a logging library
-
-  * **WebProfilerBundle** (in dev/test env) - Adds profiling functionality and
-    the web debug toolbar
-
-  * **SensioDistributionBundle** (in dev/test env) - Adds functionality for
-    configuring and working with Symfony distributions
-
-  * [**SensioGeneratorBundle**][13] (in dev/test env) - Adds code generation
-    capabilities
-
-  * **DebugBundle** (in dev/test env) - Adds Debug and VarDumper component
-    integration
-
-All libraries and bundles included in the Symfony Standard Edition are
-released under the MIT or BSD license.
-
-Enjoy!
-
-[1]:  https://symfony.com/doc/3.0/book/installation.html
-[6]:  https://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html
-[7]:  https://symfony.com/doc/3.0/book/doctrine.html
-[8]:  https://symfony.com/doc/3.0/book/templating.html
-[9]:  https://symfony.com/doc/3.0/book/security.html
-[10]: https://symfony.com/doc/3.0/cookbook/email.html
-[11]: https://symfony.com/doc/3.0/cookbook/logging/monolog.html
-[13]: https://symfony.com/doc/3.0/bundles/SensioGeneratorBundle/index.html
