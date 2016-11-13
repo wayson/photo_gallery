@@ -48,29 +48,20 @@
                         <h3 class="page-header" id="gallery-header"></h3>
                         <div class="container-fluid">
                             <div class="row" id="photo-collection-div">
-                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                               </div>
-                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                               </div>
-                               <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                   <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                               </div>
-                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                                </div>
-                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                                </div>
-                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                                </div>
-                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
-                                </div>
-                                <div class="col-lg-3 col-md-4 col-xs-6 thumb">
-                                    <img class="img-responsive" src="http://placehold.it/100x100" alt="">
+
+                            </div>
+                            <div id="photo-detail-div">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <img src="" alt="">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <h4 class="col-md-8"></h4>
+                                            <button class="col-md-4" id="photo-detail-back-btn">Back</button>
+                                        </div>
+                                        <p></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -92,6 +83,7 @@
     <script>
         //hide the photo div and show the welcome page when the page loads
         $('#photo-div').hide();
+        $('#photo-detail-div').hide();
         $('#welcome-div').show();
 
         function createCategoryItem(item, editMode)
@@ -114,11 +106,26 @@
 
                 //load the photo from ajax
                 $.getJSON('/admin/category/photo/' + $(this).attr('category-id'), null, function(photos){
+                    $('#photo-detail-div').hide();
+                    $('#photo-collection-div').show();
+
                     //clear all the photos
                     var photoDiv = $('#photo-collection-div');
                     photoDiv.empty();
                     $.each(photos, function(index, item){
                         var img = $('<img src="' + item.flickrUrlSmall + '">').addClass('img-responsive').attr('title', item.title).attr('description', item.description);
+                        img.attr('long-url', item.flickerUrlLarge);
+                        img.click(function(){
+                            $('#photo-detail-div').show();
+                            $('#photo-collection-div').hide();
+
+                            //set the page details
+                            var photoDetailDiv = $('#photo-detail-div');
+                            photoDetailDiv.find('img').attr('src', $(this).attr('long-url'));
+                            photoDetailDiv.find('h4').text($(this).attr('title'));
+                            photoDetailDiv.find('p').text($(this).attr('description'));
+                        });
+
                         var imgDiv = $('<div></div>').addClass('col-lg-3 col-md-4 col-xs-6 thumb').append(img);
                         photoDiv.append(imgDiv);
                     });
@@ -233,6 +240,11 @@
             });
 
             $(this).prev().val('');
+        });
+
+        $('#photo-detail-back-btn').click(function(){
+            $('#photo-detail-div').hide();
+            $('#photo-collection-div').show();
         });
     </script>
 
